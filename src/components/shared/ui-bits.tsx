@@ -85,7 +85,7 @@ export function DeadlineText({
   deadline: number;
   className?: string;
 }) {
-  const passed = deadline < Date.now();
+  const passed = formatDeadline(deadline).startsWith("Closed");
   return (
     <span
       className={cn(

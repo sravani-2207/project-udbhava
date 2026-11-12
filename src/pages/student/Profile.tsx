@@ -20,7 +20,6 @@ import { studentOnboardingSchema } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
-import { motion } from "framer-motion";
 import {
   ArrowUpRight,
   Check,

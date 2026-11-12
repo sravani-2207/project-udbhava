@@ -30,7 +30,6 @@ import {
   Trophy,
   UserPlus,
   UserRound,
-  X,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -424,16 +423,6 @@ export function AppShell({ role }: { role: Role }) {
             <SheetTitle>Navigation</SheetTitle>
             <SheetDescription>Move around your Udbhava workspace.</SheetDescription>
           </SheetHeader>
-          <div className="absolute right-3 top-3 z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Close navigation"
-              onClick={() => setMobileOpen(false)}
-            >
-              <X className="size-4" />
-            </Button>
-          </div>
           <SidebarBody role={role} />
         </SheetContent>
       </Sheet>

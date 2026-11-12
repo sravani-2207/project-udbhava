@@ -1,11 +1,11 @@
 {
-  "name": "freebuff.com application",
-  "short_name": "freebuff.com",
-  "description": "freebuff.com application",
+  "name": "Udbhava — real problems, real beginnings",
+  "short_name": "Udbhava",
+  "description": "Students solve real startup problems and turn good work into opportunities.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#FAF4EA",
+  "theme_color": "#590907",
   "icons": [
     {
       "src": "/logo.svg",

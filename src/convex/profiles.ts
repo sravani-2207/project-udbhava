@@ -131,6 +131,36 @@ export const completeOnboarding = mutation({
         await ctx.db.insert("studentProfiles", { userId: user._id, ...profile });
       }
 
+      // Claim any team invites sent to this email before the account existed.
+      if (user.email) {
+        const invites = await ctx.db
+          .query("teamMembers")
+          .withIndex("by_email", (q) =>
+            q.eq("invitedEmail", user.email?.trim().toLowerCase()),
+          )
+          .collect();
+        for (const invite of invites) {
+          if (invite.userId || invite.status === "joined") continue;
+          await ctx.db.patch(invite._id, {
+            userId: user._id,
+            name: fullName,
+            status: "joined",
+            invitedEmail: undefined,
+          });
+          const team = await ctx.db.get(invite.teamId);
+          const problem = await ctx.db.get(invite.problemId);
+          await ctx.db.insert("notifications", {
+            userId: user._id,
+            type: "team_invite",
+            title: "You were added to a team",
+            body: `You're now on ${team?.name ?? "a team"} for “${problem?.title ?? "a problem"}”.`,
+            link: "/student/work",
+            read: false,
+            createdAt: Date.now(),
+          });
+        }
+      }
+
       await ctx.db.patch(user._id, {
         role: "student",
         name: fullName,

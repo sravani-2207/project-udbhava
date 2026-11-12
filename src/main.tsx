@@ -1,6 +1,8 @@
 import '@vly-ai/integrations';
 import { Toaster } from "@/components/ui/sonner";
+import { AppShell } from "@/components/layout/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
+import { RequireRole } from "@/components/RequireRole";
 import { VlyToolbar } from "../vly-toolbar-readonly.tsx";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
@@ -15,10 +17,23 @@ const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
+const StudentBoard = lazy(() => import("./pages/student/Board.tsx"));
+const StudentProblem = lazy(() => import("./pages/student/ProblemDetail.tsx"));
+const StudentWork = lazy(() => import("./pages/student/MyWork.tsx"));
+const StudentWorkspace = lazy(() => import("./pages/student/Workspace.tsx"));
+const StudentProfile = lazy(() => import("./pages/student/Profile.tsx"));
+
+const OrgOverview = lazy(() => import("./pages/org/Overview.tsx"));
+const OrgProblems = lazy(() => import("./pages/org/Problems.tsx"));
+const OrgNewProblem = lazy(() => import("./pages/org/NewProblem.tsx"));
+const OrgProblemReview = lazy(() => import("./pages/org/ProblemReview.tsx"));
+const OrgOpportunities = lazy(() => import("./pages/org/Opportunities.tsx"));
+const OrgProfile = lazy(() => import("./pages/org/Profile.tsx"));
+
 // Simple loading fallback for route transitions
 function RouteLoading() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="animate-pulse text-muted-foreground">Loading...</div>
     </div>
   );
@@ -82,8 +97,6 @@ class RootErrorBoundary extends React.Component<
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
-
-
 function RouteSyncer() {
   const location = useLocation();
   useEffect(() => {
@@ -107,7 +120,6 @@ function RouteSyncer() {
   return null;
 }
 
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RootErrorBoundary>
@@ -124,11 +136,55 @@ createRoot(document.getElementById("root")!).render(
               <Route
                 path="/dashboard"
                 element={
-                  <RequireAuth>
+                  <RequireAuth redirectImmediately>
                     <Dashboard />
                   </RequireAuth>
                 }
               />
+
+              <Route
+                path="/student"
+                element={
+                  <RequireAuth
+                    redirectImmediately
+                    title="Sign in to see open problems"
+                    description="The student board, your work, and your feedback live here."
+                  >
+                    <RequireRole role="student">
+                      <AppShell role="student" />
+                    </RequireRole>
+                  </RequireAuth>
+                }
+              >
+                <Route index element={<StudentBoard />} />
+                <Route path="problems/:problemId" element={<StudentProblem />} />
+                <Route path="work" element={<StudentWork />} />
+                <Route path="work/:assignmentId" element={<StudentWorkspace />} />
+                <Route path="profile" element={<StudentProfile />} />
+              </Route>
+
+              <Route
+                path="/org"
+                element={
+                  <RequireAuth
+                    redirectImmediately
+                    title="Sign in to your startup workspace"
+                    description="Post problems, review submissions, and send opportunities."
+                  >
+                    <RequireRole role="organization">
+                      <AppShell role="organization" />
+                    </RequireRole>
+                  </RequireAuth>
+                }
+              >
+                <Route index element={<OrgOverview />} />
+                <Route path="problems" element={<OrgProblems />} />
+                <Route path="problems/new" element={<OrgNewProblem />} />
+                <Route path="problems/:problemId" element={<OrgProblemReview />} />
+                <Route path="opportunities" element={<OrgOpportunities />} />
+                <Route path="profile" element={<OrgProfile />} />
+              </Route>
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

@@ -50,7 +50,6 @@ import {
   ExternalLink,
   FileText,
   Github,
-  History,
   Link2,
   Loader2,
   MessageSquare,
@@ -64,7 +63,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router";
 import { toast } from "sonner";
@@ -529,6 +528,14 @@ export default function Workspace() {
 
   const watchedApproach = form.watch("approach");
 
+  // Start clean when moving between assignments without unmounting the route.
+  useEffect(() => {
+    form.reset({ title: "", approach: "", repoUrl: "" });
+    setLinks([]);
+    setUploaded([]);
+    setSubmitError(null);
+  }, [assignmentId, form]);
+
   const submissions = useMemo<SubmissionView[]>(
     () => detail?.submissions ?? [],
     [detail?.submissions],
@@ -585,6 +592,7 @@ export default function Workspace() {
 
   const joinedMembers = members.filter((member) => member.userId);
   const nextVersion = (latest?.version ?? 0) + 1;
+  const activeAssignmentId = detail.assignment._id;
 
   async function handleFiles(event: React.ChangeEvent<HTMLInputElement>) {
     const fileList = Array.from(event.target.files ?? []);
@@ -641,7 +649,7 @@ export default function Workspace() {
     }
     try {
       const result = await submitSolution({
-        assignmentId: detail.assignment._id,
+        assignmentId: activeAssignmentId,
         phaseId: selectedPhase._id,
         title: values.title,
         approach: values.approach,
@@ -665,7 +673,7 @@ export default function Workspace() {
     setTeamBusy(true);
     try {
       const result = await inviteTeammate({
-        assignmentId: detail.assignment._id,
+        assignmentId: activeAssignmentId,
         email: inviteEmail,
       });
       toast.success(
@@ -684,7 +692,7 @@ export default function Workspace() {
   async function handleLeadChange(memberId: string) {
     try {
       await setTeamLead({
-        assignmentId: detail.assignment._id,
+        assignmentId: activeAssignmentId,
         memberId: memberId as Id<"teamMembers">,
       });
       toast.success("Team lead updated.");
@@ -1189,9 +1197,7 @@ export default function Workspace() {
             <div className="space-y-2">
               <label className="text-xs font-medium">Submission lead</label>
               <Select
-                value={
-                  members.find((member) => member.role === "lead")?.userId ?? ""
-                }
+                value={members.find((member) => member.role === "lead")?.userId}
                 onValueChange={(value) => void handleLeadChange(value)}
               >
                 <SelectTrigger className="h-9 w-full bg-background/70 text-xs">

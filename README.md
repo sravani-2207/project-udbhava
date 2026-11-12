@@ -1,293 +1,229 @@
-## Overview
+# Udbhava
 
-This project uses the following tech stack:
-- Vite
-- Typescript
-- React Router v7 (all imports from `react-router` instead of `react-router-dom`)
-- React 19 (for frontend components)
-- Tailwind v4 (for styling)
-- Shadcn UI (for UI components library)
-- Lucide Icons (for icons)
-- Convex (for backend & database)
-- Convex Auth (for authentication)
-- Framer Motion (for animations)
-- Three js (for 3d models)
+A calm, premium exchange between students and small teams.
 
-All relevant files live in the 'src' directory.
+Startups post the real problems they're stuck on. Students take a brief up solo or
+with a team, submit phase by phase, and receive structured first-pass feedback.
+Startups shortlist, comment, compare side by side, and send real opportunities.
 
-Use bun for the package manager.
+---
 
-## Setup
+## Version 1 scope
 
-This project is set up already and running on a cloud environment, as well as a convex development in the sandbox.
+This build deliberately stops at the scoped v1:
 
-## Environment Variables
+- **The flow it nails first:** a student submits a solution — and can resubmit it
+  as a new version until the deadline.
+- **The student's first screen:** the open problems board, ranked against their
+  profile.
+- **Who it is for:** students and organizations. **No admin dashboard** in v1.
+  Admin-only features (verification queues, suspensions, taxonomy, audit logs) are
+  intentionally not built.
+- A complete organization side exists so submissions have a real reviewer:
+  posting briefs, drafts, publishing, closing, phase-level review, shortlisting,
+  comments, side-by-side comparison, offers, and basic analytics.
 
-The project is set up with project specific CONVEX_DEPLOYMENT and VITE_CONVEX_URL environment variables on the client side.
+## Stack
 
-The convex server has a separate set of environment variables that are accessible by the convex backend.
+- React 19, Vite, TypeScript (strict), Tailwind CSS v4, shadcn/ui (Radix),
+  React Router, Framer Motion, Recharts, Lucide.
+- React Hook Form + Zod for the submission, profile, and problem forms; Zod also
+  validates onboarding and opportunity messages.
+- **Convex** for the backend, database, auth, and file storage.
 
-Currently, these variables include auth-specific keys: JWKS, JWT_PRIVATE_KEY, and SITE_URL.
+### Note on the requested Express/Postgres stack
 
+This project runs on the Freebuff browser runtime, whose managed backend is
+Convex. The server layer therefore lives in `src/convex` instead of a separate
+Express process. The requested guarantees are preserved in that layer:
 
-# Using Authentication (Important!)
+- every function validates its inputs and re-checks the caller's role server-side
+  (`src/convex/lib/authz.ts`);
+- auth sessions are issued by Convex Auth (email OTP, no passwords, secure
+  httpOnly session handling) rather than a hand-rolled JWT + bcrypt pair;
+- uploads use Convex file storage instead of Multer;
+- the 50-solution cap is enforced inside one serializable Convex mutation, which
+  gives the same atomic check-and-increment guarantee as a Postgres transaction
+  with `SELECT … FOR UPDATE`;
+- no secrets are committed. Configuration lives in `.env.example` and the Convex
+  deployment environment.
 
-You must follow these conventions when using authentication.
+There is **no external AI API or model anywhere in this project**. See
+[AI feedback](#ai-feedback).
 
-## Auth is already set up.
+## Run it locally
 
-All convex authentication functions are already set up. The auth currently uses email OTP and anonymous users, but can support more.
+Prerequisites: Bun and a Convex project.
 
-The email OTP configuration is defined in `src/convex/auth/emailOtp.ts`. DO NOT MODIFY THIS FILE.
-
-Also, DO NOT MODIFY THESE AUTH FILES: `src/convex/auth.config.ts` and `src/convex/auth.ts`.
-
-## Using Convex Auth on the backend
-
-On the `src/convex/users.ts` file, you can use the `getCurrentUser` function to get the current user's data.
-
-## Using Convex Auth on the frontend
-
-The `/auth` page is already set up to use auth. Navigate to `/auth` for all log in / sign up sequences.
-
-You MUST use this hook to get user data. Never do this yourself without the hook:
-```typescript
-import { useAuth } from "@/hooks/use-auth";
-
-const { isLoading, isAuthenticated, user, signIn, signOut } = useAuth();
+```bash
+bun install
 ```
 
-## Protected Routes
+Set up `.env.example` values in `.env.local` (or use the values already injected
+by the runtime):
 
-The starter `/dashboard` route is protected with `RequireAuth`. Extend that page
-for the product's authenticated experience, and reuse `RequireAuth` when adding
-another protected route — do NOT hand-roll a redirect to `/auth`, since landing
-on a bare sign-in form with no explanation of what was blocked is confusing.
-
-`RequireAuth` states the block on the page the visitor asked for and sends them
-to `/auth?returnTo=<current route>` when they choose to sign in, so they come
-back to it. Pass `title` and `description` to say what the page is:
-
-```tsx
-<Route
-  path="/dashboard"
-  element={
-    <RequireAuth
-      title="Sign in to view your dashboard"
-      description="Your projects and settings live here."
-    >
-      <Dashboard />
-    </RequireAuth>
-  }
-/>
+```env
+VITE_CONVEX_URL=https://<your-deployment>.convex.cloud
+CONVEX_DEPLOYMENT=<your-deployment-name>
+CONVEX_SITE_URL=http://localhost:5173
 ```
 
-Pass `redirectImmediately` for a route where bouncing straight to `/auth` really
-is better.
+Start the backend and generate types:
 
-## Auth Page
-
-The auth page is defined in `src/pages/Auth.tsx`. Send sign-in and sign-up actions
-to `/auth`.
-
-## Authorization
-
-You can perform authorization checks on the frontend and backend.
-
-On the frontend, you can use the `useAuth` hook to get the current user's data and authentication state.
-
-You should also be protecting queries, mutations, and actions at the base level, checking for authorization securely.
-
-## Adding a redirect after auth
-
-The `/auth` route in `src/main.tsx` redirects to `/dashboard` by default. If the
-product's main authenticated route is different, update `redirectAfterAuth` to
-that route. A validated same-origin `returnTo` query parameter takes priority so
-users can resume the protected page they originally requested. Never leave an
-authenticated product redirecting back to the public landing page.
-
-## Complete authenticated products
-
-When the requested product implies accounts, a workspace, a dashboard, or other
-signed-in functionality, the task is not complete with only a landing page and
-auth form. Build the main authenticated experience, protect its route, and verify
-that signing in reaches it.
-
-# Frontend Conventions
-
-You will be using the Vite frontend with React 19, Tailwind v4, and Shadcn UI.
-
-Generally, pages should be in the `src/pages` folder, and components should be in the `src/components` folder.
-
-Shadcn primitives are located in the `src/components/ui` folder and should be used by default.
-
-## Page routing
-
-Your page component should go under the `src/pages` folder.
-
-When adding a page, update the react router configuration in `src/main.tsx` to include the new route you just added.
-
-## Shad CN conventions
-
-Follow these conventions when using Shad CN components, which you should use by default.
-- Remember to use "cursor-pointer" to make the element clickable
-- For title text, use the "tracking-tight font-bold" class to make the text more readable
-- Always make apps MOBILE RESPONSIVE. This is important
-- AVOID NESTED CARDS. Try and not to nest cards, borders, components, etc. Nested cards add clutter and make the app look messy.
-- AVOID SHADOWS. Avoid adding any shadows to components. stick with a thin border without the shadow.
-- Avoid skeletons; instead, use the loader2 component to show a spinning loading state when loading data.
-
-
-## Landing Pages
-
-You must always create good-looking designer-level styles to your application. 
-- Make it well animated and fit a certain "theme", ie neo brutalist, retro, neumorphism, glass morphism, etc
-
-Use known images and emojis from online.
-
-If the user is logged in already, show the get started button to say "Dashboard" or "Profile" instead to take them there.
-
-## Responsiveness and formatting
-
-Make sure pages are wrapped in a container to prevent the width stretching out on wide screens. Always make sure they are centered aligned and not off-center.
-
-Always make sure that your designs are mobile responsive. Verify the formatting to ensure it has correct max and min widths as well as mobile responsiveness.
-
-- Always create sidebars for protected dashboard pages and navigate between pages
-- Always create navbars for landing pages
-- On these bars, the created logo should be clickable and redirect to the index page
-
-## Animating with Framer Motion
-
-You must add animations to components using Framer Motion. It is already installed and configured in the project.
-
-To use it, import the `motion` component from `framer-motion` and use it to wrap the component you want to animate.
-
-
-### Other Items to animate
-- Fade in and Fade Out
-- Slide in and Slide Out animations
-- Rendering animations
-- Button clicks and UI elements
-
-Animate for all components, including on landing page and app pages.
-
-## Three JS Graphics
-
-Your app comes with three js by default. You can use it to create 3D graphics for landing pages, games, etc.
-
-
-## Colors
-
-You can override colors in: `src/index.css`
-
-This uses the oklch color format for tailwind v4.
-
-Always use these color variable names.
-
-Make sure all ui components are set up to be mobile responsive and compatible with both light and dark mode.
-
-Set theme using `dark` or `light` variables at the parent className.
-
-## Styling and Theming
-
-When changing the theme, always change the underlying theme of the shad cn components app-wide under `src/components/ui` and the colors in the index.css file.
-
-Avoid hardcoding in colors unless necessary for a use case, and properly implement themes through the underlying shad cn ui components.
-
-When styling, ensure buttons and clickable items have pointer-click on them (don't by default).
-
-Always follow a set theme style and ensure it is tuned to the user's liking.
-
-## Toasts
-
-You should always use toasts to display results to the user, such as confirmations, results, errors, etc.
-
-Use the shad cn Sonner component as the toaster. For example:
-
+```bash
+bunx convex dev
 ```
-import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
-export function SonnerDemo() {
-  return (
-    <Button
-      variant="outline"
-      onClick={() =>
-        toast("Event has been created", {
-          description: "Sunday, December 03, 2023 at 9:00 AM",
-          action: {
-            label: "Undo",
-            onClick: () => console.log("Undo"),
-          },
-        })
-      }
-    >
-      Show Toast
-    </Button>
-  )
+In a second terminal, seed the demo data and start the app:
+
+```bash
+bunx convex run seed:run
+bun run dev
+```
+
+The seed is idempotent, so `bun run seed` (alias) is safe to run repeatedly.
+
+### Demo access (no email required)
+
+On `/auth`, use **Student demo** or **Startup demo**. Each creates an isolated
+demo workspace on an anonymous session:
+
+- **Student demo** — a filled profile, one live assignment on a multi-phase brief,
+  a submitted version with feedback, an offer, and notifications.
+- **Startup demo** — a company profile, two owned briefs, five student
+  submissions with analyses, a shortlist, a reviewer note, and a sent offer.
+
+Email sign-up/sign-in uses a six-digit code, asks for the **role first**, then
+collects role-specific onboarding details. The role is fixed at onboarding.
+
+## Seeded data
+
+`bunx convex run seed:run` creates, idempotently:
+
+- 4 startups: Kettle & Co., Neelam Health, Tenfold Studio, Loopwise.
+- 4 student profiles with different skills and domains.
+- 6 problems, including multi-phase briefs, a single-phase brief, and one
+  closed-at-cap example that displays **Submissions full**.
+- Versioned sample submissions with AI analyses, shortlists, a reviewer comment,
+  and opportunities.
+- Notifications for feedback, shortlists, and offers.
+
+Admin accounts are excluded because admin is out of v1 scope.
+
+## Routes
+
+| Route | Access | Purpose |
+| --- | --- | --- |
+| `/` | public | Landing page |
+| `/auth` | public | Role-first sign-up, sign-in, demo access |
+| `/dashboard` | signed in | Redirects to the account's own workspace |
+| `/student` | student | Open problems board |
+| `/student/problems/:id` | student | Brief, phases, criteria, take-up flow |
+| `/student/work` | student | Active briefs, version progress, offers |
+| `/student/work/:assignmentId` | assigned student / team | Submission workspace and feedback |
+| `/student/profile` | student | Editable profile and showcase |
+| `/org` | organization | Overview, analytics, review queue |
+| `/org/problems` | organization | Draft / live / closed briefs |
+| `/org/problems/new` | organization | Create a brief with phases |
+| `/org/problems/:id` | owning organization | Review, shortlist, comment, compare, offer |
+| `/org/opportunities` | organization | Sent offers and their statuses |
+| `/org/profile` | organization | Company profile |
+
+Both app sections are protected by `RequireAuth` + `RequireRole` on the client,
+and every Convex query/mutation re-checks the signed-in user and ownership on the
+server. Signed-out visitors are sent to `/auth?returnTo=…` and returned to the page
+they asked for.
+
+## Business rules
+
+- **50-solution cap.** `assignments.takeUp` reads the problem, rejects a full or
+  closed problem, increments `solutionCount`, and auto-closes at the cap in one
+  serializable mutation. The board and detail page show a live
+  `taken / 50` meter and the full state reads **Submissions full**. Concurrent
+  take-ups cannot overfill the cap.
+- **Phases.** Every problem has at least one phase. With multiple phases, a student
+  must choose one at take-up; the choice is stored on the assignment and the
+  backend refuses submissions for any other phase.
+- **Solo/team is captured once.** `assignment.mode` is recorded at take-up. There
+  is no mutation to change it. Teams have up to five members, one lead, and only
+  the lead submits; the lead can be reassigned explicitly.
+- **Versioned submissions.** A new submission becomes `vN+1` for that
+  assignment/phase. Nothing is overwritten. Earlier versions and their feedback stay
+  readable, and resubmission works until the deadline.
+- **Deadline & closure.** Submissions stop when the org closes the brief, the
+  deadline passes, or the cap is reached. The workspace turns read-only and says
+  why.
+- **Notifications** are created for team invites, new submissions, feedback ready,
+  reviewer comments, shortlists, and offers.
+
+## AI feedback
+
+The feedback is generated by one isolated, deterministic stub:
+
+**`src/convex/services/aiAnalysis.ts`**
+
+It returns the final structured shape already used by the UI:
+
+```ts
+{
+  alignmentScore: number;          // 0–100
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];       // actionable upgrades
+  criteriaCoverage: { criterion: string; covered: boolean }[];
+  model: string;
 }
 ```
 
-Remember to import { toast } from "sonner". Usage: `toast("Event has been created.")`
+The module is clearly commented with the migration path: turn it into a Convex
+`"use node"` action, keep the result shape, persist it to `aiAnalyses`, and no UI
+change is required. The UI labels this as a structured first pass, not a verdict.
 
-## Dialogs
+## Data model
 
-Always ensure your larger dialogs have a scroll in its content to ensure that its content fits the screen size. Make sure that the content is not cut off from the screen.
+Defined and indexed in `src/convex/schema.ts`:
 
-Ideally, instead of using a new page, use a Dialog instead. 
+`users` (roles: student, organization, admin) · `studentProfiles` ·
+`organizationProfiles` · `problems` · `phases` · `teams` · `teamMembers` ·
+`assignments` · `submissions` · `aiAnalyses` · `shortlists` · `reviews` ·
+`opportunities` · `notifications`.
 
-# Using the Convex backend
+Indexes cover every access path used by the queries: problems by owner/state/
+deadline, phases and submissions by problem, assignments by student and problem,
+team membership by problem and user, analyses and reviews by submission,
+notifications by user and read state.
 
-You will be implementing the convex backend. Follow your knowledge of convex and the documentation to implement the backend.
+## Design
 
-## The Convex Schema
+- Palette applied only through theme tokens in `src/index.css`:
+  Muted Sage Grey `#A5A79B` in surfaces and hairlines, Warm Cream Beige
+  `#E8D2B5` in backgrounds and soft panels, Deep Burgundy `#590907` in primary
+  actions, headings, and active states.
+- Cormorant Garamond for display serif and a widely tracked `UDBHAVA` wordmark;
+  Instrument Sans for UI. The lotus mark is a clean inline SVG in
+  `src/components/brand.tsx`.
+- Loading skeletons (`src/components/shared/state-views.tsx`), explicit empty
+  states, and a page-level error boundary are used across the app.
+- Responsive from mobile upward; the dashboard uses a real sidebar with a mobile
+  sheet, and all dialogs constrain their height and scroll internally.
 
-You must correctly follow the convex schema implementation.
+## Scripts
 
-The schema is defined in `src/convex/schema.ts`.
-
-Do not include the `_id` and `_creationTime` fields in your queries (it is included by default for each table).
-Do not index `_creationTime` as it is indexed for you. Never have duplicate indexes.
-
-
-## Convex Actions: Using CRUD operations
-
-When running anything that involves external connections, you must use a convex action with "use node" at the top of the file.
-
-You cannot have queries or mutations in the same file as a "use node" action file. Thus, you must use pre-built queries and mutations in other files.
-
-You can also use the pre-installed internal crud functions for the database:
-
-```ts
-// in convex/users.ts
-import { crud } from "convex-helpers/server/crud";
-import schema from "./schema.ts";
-
-export const { create, read, update, destroy } = crud(schema, "users");
-
-// in some file, in an action:
-const user = await ctx.runQuery(internal.users.read, { id: userId });
-
-await ctx.runMutation(internal.users.update, {
-  id: userId,
-  patch: {
-    status: "inactive",
-  },
-});
+```bash
+bun run dev          # Vite frontend
+bun run seed         # bunx convex run seed:run
+bun run lint         # ESLint
+bun tsc -b --noEmit  # Typecheck
+bunx convex dev --once   # Deploy functions + refresh generated types
 ```
 
+## Verification
 
-## Common Convex Mistakes To Avoid
+```bash
+bunx convex dev --once && bun tsc -b --noEmit
+```
 
-When using convex, make sure:
-- Document IDs are referenced as `_id` field, not `id`.
-- Document ID types are referenced as `Id<"TableName">`, not `string`.
-- Document object types are referenced as `Doc<"TableName">`.
-- Keep schemaValidation to false in the schema file.
-- You must correctly type your code so that it passes the type checker.
-- You must handle null / undefined cases of your convex queries for both frontend and backend, or else it will throw an error that your data could be null or undefined.
-- Always use the `@/folder` path, with `@/convex/folder/file.ts` syntax for importing convex files.
-- This includes importing generated files like `@/convex/_generated/server`, `@/convex/_generated/api`
-- Remember to import functions like useQuery, useMutation, useAction, etc. from `convex/react`
-- NEVER have return type validators.
+Both commands must exit 0. The project currently has no dedicated automated test
+suite; v1 was verified through the typecheck, Convex function deploy, and the
+seeded end-to-end paths described above.

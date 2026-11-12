@@ -238,8 +238,6 @@ export default function OrgOverview() {
                                 <span>{problem.averageScore}/100 avg.</span>
                               </>
                             ) : null}
-                            <span aria-hidden="true">·</span>
-                            <span>{problem.shortlistCount} shortlisted</span>
                           </span>
                         </span>
                         <ArrowRight className="mt-1 size-3.5 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />

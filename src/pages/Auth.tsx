@@ -27,7 +27,7 @@ import {
   Mail,
   Sparkles,
 } from "lucide-react";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -215,10 +215,6 @@ function AuthPage() {
   const demoInFlight = useRef(false);
 
   const returnTo = safeReturnTo(searchParams.get("returnTo"));
-  const destination = useMemo(
-    () => returnTo ?? (role ? homeFor(role) : "/dashboard"),
-    [returnTo, role],
-  );
 
   // A returning account always continues to its own workspace (or the page it
   // originally asked for), never back to the public landing page.
@@ -387,7 +383,7 @@ function AuthPage() {
           navigate(returnTo ?? homeFor(targetRole), { replace: true });
         }
       }
-    } catch (error) {
+    } catch {
       setFormError("That code didn't work. Check the six digits and try again.");
       setCode("");
     } finally {

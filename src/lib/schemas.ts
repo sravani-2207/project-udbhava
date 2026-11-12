@@ -56,7 +56,7 @@ export const problemSchema = z.object({
   skills: z.string().trim().min(2, "Add at least one skill."),
   difficulty: z.enum(["starter", "intermediate", "advanced"]),
   deadline: z.string().min(1, "Pick a deadline."),
-  solutionCap: z.coerce
+  solutionCap: z
     .number()
     .min(1, "At least one solution.")
     .max(50, "The maximum cap is 50."),

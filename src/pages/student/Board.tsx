@@ -3,9 +3,7 @@ import { CardGridSkeleton, EmptyState } from "@/components/shared/state-views";
 import {
   DeadlineText,
   DifficultyBadge,
-  Eyebrow,
   MatchChip,
-  MetaItem,
   PageHeading,
   PhaseCount,
   SlotsMeter,

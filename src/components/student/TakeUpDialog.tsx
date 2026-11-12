@@ -83,7 +83,10 @@ export function TakeUpDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const profileSkills = me?.studentProfile?.skills ?? [];
+  const profileSkills = useMemo(
+    () => me?.studentProfile?.skills ?? [],
+    [me?.studentProfile?.skills],
+  );
   const matchingCounts = useMemo(() => {
     const set = new Set(profileSkills.map((skill) => skill.toLowerCase()));
     return new Map(
@@ -94,9 +97,12 @@ export function TakeUpDialog({
     );
   }, [phases, profileSkills]);
 
+  // Pre-select the best phase once per opening, then leave the student's own
+  // choice alone while the dialog stays open.
   useEffect(() => {
     if (!open) return;
     if (phases.length === 1) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPhaseId(phases[0]._id);
       return;
     }
@@ -104,10 +110,12 @@ export function TakeUpDialog({
       (a, b) => (matchingCounts.get(b._id) ?? 0) - (matchingCounts.get(a._id) ?? 0),
     )[0];
     setPhaseId(best?._id ?? phases[0]?._id ?? null);
-  }, [open, phases, matchingCounts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   useEffect(() => {
     if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMode("solo");
       setTeamName("");
       setInviteEmails("");

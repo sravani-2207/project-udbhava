@@ -132,8 +132,9 @@ export const board = query({
     const all = await ctx.db.query("problems").collect();
     const visible = all.filter(
       (problem) =>
-        problem.state === "published" ||
-        (problem.state === "closed" && problem.closedReason === "cap"),
+        (problem.state === "published" ||
+          (problem.state === "closed" && problem.closedReason === "cap")) &&
+        problem.deadline > now,
     );
 
     const search = lower(args.search ?? "");
@@ -173,7 +174,7 @@ export const board = query({
           .query("phases")
           .withIndex("by_problem", (q) => q.eq("problemId", problem._id))
           .collect();
-        const assignment = user
+        const ownAssignment = user
           ? await ctx.db
               .query("assignments")
               .withIndex("by_problem_and_student", (q) =>
@@ -181,6 +182,23 @@ export const board = query({
               )
               .first()
           : null;
+        // Team members don't own the assignment, but they should still see
+        // that they are already on this brief.
+        let assignment = ownAssignment;
+        if (!assignment && user) {
+          const membership = await ctx.db
+            .query("teamMembers")
+            .withIndex("by_problem_and_user", (q) =>
+              q.eq("problemId", problem._id).eq("userId", user._id),
+            )
+            .first();
+          if (membership) {
+            assignment = await ctx.db
+              .query("assignments")
+              .withIndex("by_team", (q) => q.eq("teamId", membership.teamId))
+              .first();
+          }
+        }
         const match = profile
           ? matchScoreFor(problem, profileSkills, profileDomains)
           : { score: 0, matchedSkills: [] as string[] };
@@ -252,7 +270,7 @@ export const getById = query({
         .collect()
     ).sort((a, b) => a.order - b.order);
 
-    const assignment =
+    const ownAssignment =
       user && user.role === "student"
         ? await ctx.db
             .query("assignments")
@@ -261,6 +279,21 @@ export const getById = query({
             )
             .first()
         : null;
+    let assignment = ownAssignment;
+    if (!assignment && user && user.role === "student") {
+      const membership = await ctx.db
+        .query("teamMembers")
+        .withIndex("by_problem_and_user", (q) =>
+          q.eq("problemId", problem._id).eq("userId", user._id),
+        )
+        .first();
+      if (membership) {
+        assignment = await ctx.db
+          .query("assignments")
+          .withIndex("by_team", (q) => q.eq("teamId", membership.teamId))
+          .first();
+      }
+    }
 
     const team = assignment?.teamId
       ? await ctx.db.get(assignment.teamId)
@@ -425,7 +458,9 @@ export const updateState = mutation({
       throw new ConvexError("The deadline has passed — extend it before reopening.");
     }
     if (problem.solutionCount >= problem.solutionCap) {
-      throw new ConvexError("The solution cap is reached. Raise the cap first.");
+      throw new ConvexError(
+        "This brief reached its solution cap, so it cannot be reopened.",
+      );
     }
     await ctx.db.patch(problem._id, {
       state: "published",
