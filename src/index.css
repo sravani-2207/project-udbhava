@@ -1,0 +1,247 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/*
+ * Udbhava palette, only these three families are used:
+ *   Muted Sage Grey  #A5A79B
+ *   Warm Cream Beige #E8D2B5
+ *   Deep Burgundy    #590907
+ * Light mode is a warm paper canvas; sage is used for hairlines and quiet
+ * surfaces; burgundy carries every primary action and active state.
+ */
+:root {
+  --radius: 0.8rem;
+  --background: oklch(0.973 0.015 84);
+  --foreground: oklch(0.245 0.025 30);
+  --card: oklch(0.988 0.009 84);
+  --card-foreground: oklch(0.245 0.025 30);
+  --popover: oklch(0.992 0.007 84);
+  --popover-foreground: oklch(0.245 0.025 30);
+  --primary: oklch(0.302 0.113 27);
+  --primary-foreground: oklch(0.958 0.024 80);
+  --secondary: oklch(0.928 0.014 110);
+  --secondary-foreground: oklch(0.32 0.038 32);
+  --muted: oklch(0.945 0.013 88);
+  --muted-foreground: oklch(0.478 0.014 115);
+  --accent: oklch(0.866 0.048 77);
+  --accent-foreground: oklch(0.31 0.104 28);
+  --destructive: oklch(0.52 0.19 27);
+  --border: oklch(0.892 0.015 92);
+  --input: oklch(0.882 0.016 92);
+  --ring: oklch(0.302 0.113 27);
+  --chart-1: oklch(0.36 0.115 28);
+  --chart-2: oklch(0.68 0.022 116);
+  --chart-3: oklch(0.79 0.068 76);
+  --chart-4: oklch(0.52 0.032 118);
+  --chart-5: oklch(0.56 0.085 30);
+  --sidebar: oklch(0.958 0.017 84);
+  --sidebar-foreground: oklch(0.28 0.028 32);
+  --sidebar-primary: oklch(0.302 0.113 27);
+  --sidebar-primary-foreground: oklch(0.958 0.024 80);
+  --sidebar-accent: oklch(0.925 0.028 82);
+  --sidebar-accent-foreground: oklch(0.302 0.113 27);
+  --sidebar-border: oklch(0.89 0.015 92);
+  --sidebar-ring: oklch(0.302 0.113 27);
+}
+
+.dark {
+  --background: oklch(0.212 0.018 32);
+  --foreground: oklch(0.947 0.018 82);
+  --card: oklch(0.252 0.02 32);
+  --card-foreground: oklch(0.947 0.018 82);
+  --popover: oklch(0.252 0.02 32);
+  --popover-foreground: oklch(0.947 0.018 82);
+  --primary: oklch(0.86 0.048 78);
+  --primary-foreground: oklch(0.27 0.09 27);
+  --secondary: oklch(0.32 0.02 112);
+  --secondary-foreground: oklch(0.94 0.018 82);
+  --muted: oklch(0.3 0.018 34);
+  --muted-foreground: oklch(0.72 0.016 100);
+  --accent: oklch(0.38 0.04 78);
+  --accent-foreground: oklch(0.95 0.025 82);
+  --destructive: oklch(0.66 0.16 27);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.86 0.048 78);
+  --chart-1: oklch(0.76 0.09 32);
+  --chart-2: oklch(0.75 0.03 118);
+  --chart-3: oklch(0.85 0.06 78);
+  --chart-4: oklch(0.62 0.04 120);
+  --chart-5: oklch(0.68 0.1 28);
+  --sidebar: oklch(0.235 0.019 32);
+  --sidebar-foreground: oklch(0.93 0.017 82);
+  --sidebar-primary: oklch(0.86 0.048 78);
+  --sidebar-primary-foreground: oklch(0.27 0.09 27);
+  --sidebar-accent: oklch(0.32 0.03 34);
+  --sidebar-accent-foreground: oklch(0.94 0.018 82);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.86 0.048 78);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "ss01" on, "cv01" on;
+  }
+  ::selection {
+    background: #e8d2b5;
+    color: #590907;
+  }
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+  }
+  .paper-wash {
+    background-image:
+      radial-gradient(
+        ellipse 65% 55% at 78% 6%,
+        color-mix(in oklab, var(--accent) 48%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 55% 45% at 0% 90%,
+        color-mix(in oklab, var(--secondary) 55%, transparent),
+        transparent 72%
+      );
+  }
+  .hairline {
+    background-image: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in oklab, var(--border) 92%, transparent),
+      transparent
+    );
+  }
+  .soft-card {
+    box-shadow:
+      0 1px 2px color-mix(in oklab, var(--primary) 4%, transparent),
+      0 24px 48px -36px color-mix(in oklab, var(--primary) 28%, transparent);
+  }
+  .lift {
+    transition:
+      transform 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease;
+  }
+  .lift:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--primary) 22%, var(--border));
+    box-shadow:
+      0 1px 2px color-mix(in oklab, var(--primary) 5%, transparent),
+      0 28px 52px -38px color-mix(in oklab, var(--primary) 46%, transparent);
+  }
+  .skeleton-warm {
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--muted) 100%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 34%, var(--muted)) 50%,
+      color-mix(in oklab, var(--muted) 100%, transparent) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 150% 0;
+  }
+  100% {
+    background-position: -50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .lift,
+  .lift:hover {
+    transform: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
