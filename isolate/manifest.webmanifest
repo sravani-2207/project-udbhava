@@ -1,0 +1,17 @@
+{
+  "name": "Udbhava — real problems, real beginnings",
+  "short_name": "Udbhava",
+  "description": "Students solve real startup problems and turn good work into opportunities.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF4EA",
+  "theme_color": "#590907",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
