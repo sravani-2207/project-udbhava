@@ -1,5 +1,6 @@
 import { Monogram } from "@/components/brand";
 import { EmptyState } from "@/components/shared/state-views";
+import VoiceSolutionInput from "@/components/ai/VoiceSolutionInput";
 import {
   DeadlineText,
   Eyebrow,
@@ -38,7 +39,7 @@ import { formatDate, formatTimeAgo } from "@/lib/format";
 import { submissionSchema, type SubmissionValues } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import {
   AlertCircle,
@@ -62,6 +63,7 @@ import {
   UserRound,
   Users,
   X,
+  Volume2,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -148,7 +150,75 @@ function StageStrip({
 
 function FeedbackPanel({ submission }: { submission: SubmissionView | null }) {
   const analysis = submission?.analysis ?? null;
+const speakFeedback = useAction(api.gnani.speakFeedback);
 
+const [speaking, setSpeaking] = useState(false);
+const audioRef = useRef<HTMLAudioElement | null>(null);
+const audioUrlRef = useRef<string | null>(null);
+
+useEffect(() => {
+  return () => {
+    audioRef.current?.pause();
+
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+    }
+  };
+}, []);
+
+async function handleListenFeedback() {
+  if (!analysis) return;
+
+  try {
+    setSpeaking(true);
+
+    audioRef.current?.pause();
+
+    const feedbackText = [
+      analysis.summary,
+      "Strengths.",
+      ...analysis.strengths,
+      "Areas to improve.",
+      ...analysis.weaknesses,
+      "Recommended upgrades.",
+      ...analysis.recommendations,
+    ].join(". ");
+
+    const result = await speakFeedback({
+      text: feedbackText,
+      voice: "Kaveri",
+    });
+
+    if (!result.success || !result.audioContent) {
+      throw new Error("No audio was generated.");
+    }
+
+    const audioBlob = await fetch(
+      `data:audio/wav;base64,${result.audioContent}`
+    ).then((response) => response.blob());
+
+    const url = URL.createObjectURL(audioBlob);
+
+    if (audioUrlRef.current) {
+  URL.revokeObjectURL(audioUrlRef.current);
+}
+
+audioUrlRef.current = url;
+
+    const audio = new Audio(url);
+    audioRef.current = audio;
+
+    await audio.play();
+  } catch (error) {
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : "Unable to play feedback."
+    );
+  } finally {
+    setSpeaking(false);
+  }
+}
   if (!submission) {
     return (
       <div className="rounded-2xl border border-border/70 bg-card p-5">
@@ -198,6 +268,23 @@ function FeedbackPanel({ submission }: { submission: SubmissionView | null }) {
       <div className="mt-4">
         <ScoreRing score={analysis.alignmentScore} size={82} />
       </div>
+      <div className="mt-4">
+  <Button
+    type="button"
+    variant="outline"
+    className="w-full gap-2"
+    onClick={() => void handleListenFeedback()}
+    disabled={speaking}
+  >
+    {speaking ? (
+      <Loader2 className="size-4 animate-spin" />
+    ) : (
+      <Volume2 className="size-4" />
+    )}
+
+    {speaking ? "Generating audio..." : "Listen to Feedback"}
+  </Button>
+</div>
 
       <p className="mt-4 text-[0.8rem] leading-6 text-foreground/80">
         {analysis.summary}
@@ -658,8 +745,8 @@ export default function Workspace() {
         files: uploaded,
       });
       toast.success(`Version ${result.version} submitted`, {
-        description: `First-pass alignment: ${result.alignmentScore}/100. Feedback is ready.`,
-      });
+  description: "Grok is evaluating your solution. Feedback will appear here shortly.",
+});
       form.reset({ title: "", approach: "", repoUrl: "" });
       setLinks([]);
       setUploaded([]);
@@ -826,6 +913,17 @@ export default function Workspace() {
                       </FormItem>
                     )}
                   />
+                  <VoiceSolutionInput
+  onTranscript={(text) => {
+    const current = form.getValues("approach");
+
+    form.setValue(
+      "approach",
+      current ? `${current}\n${text}` : text,
+      { shouldValidate: true }
+    );
+  }}
+/>
 
                   <FormField
                     control={form.control}

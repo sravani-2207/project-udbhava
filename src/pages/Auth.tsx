@@ -213,6 +213,7 @@ function AuthPage() {
     values: z.infer<typeof studentOnboardingSchema> | z.infer<typeof organizationOnboardingSchema>;
   } | null>(null);
   const demoInFlight = useRef(false);
+  const [pendingDemoRole, setPendingDemoRole] = useState<Role | null>(null);
 
   const returnTo = safeReturnTo(searchParams.get("returnTo"));
 
@@ -391,29 +392,63 @@ function AuthPage() {
     }
   }
 
-  async function enterDemo(demoRole: Role) {
-    setFormError(null);
-    setBusy(demoRole === "student" ? "demo-student" : "demo-org");
-    demoInFlight.current = true;
+ async function enterDemo(demoRole: Role) {
+  setFormError(null);
+  setBusy(demoRole === "student" ? "demo-student" : "demo-org");
+  demoInFlight.current = true;
+
+  try {
+    if (isAuthenticated) {
+      await signOut();
+    }
+
+    await signIn("anonymous");
+
+    // Wait for Convex to confirm the anonymous session.
+    setPendingDemoRole(demoRole);
+  } catch (error) {
+    demoInFlight.current = false;
+    setFormError(errorMessage(error));
+    setBusy(null);
+  }
+}
+useEffect(() => {
+  if (!pendingDemoRole || !isAuthenticated) return;
+
+  let cancelled = false;
+
+  async function completeDemo() {
     try {
-      if (isAuthenticated) {
-        await signOut();
-      }
-      await signIn("anonymous");
-      await startDemo({ role: demoRole });
+      await startDemo({ role: pendingDemoRole! });
+
+      if (cancelled) return;
+
       toast.success(
-        demoRole === "student"
+        pendingDemoRole === "student"
           ? "Demo student workspace ready."
           : "Demo startup workspace ready.",
       );
-      navigate(homeFor(demoRole), { replace: true });
+
+      navigate(homeFor(pendingDemoRole!), { replace: true });
     } catch (error) {
-      setFormError(errorMessage(error));
+      if (!cancelled) {
+        setFormError(errorMessage(error));
+      }
     } finally {
-      demoInFlight.current = false;
-      setBusy(null);
+      if (!cancelled) {
+        setPendingDemoRole(null);
+        demoInFlight.current = false;
+        setBusy(null);
+      }
     }
   }
+
+  void completeDemo();
+
+  return () => {
+    cancelled = true;
+  };
+}, [pendingDemoRole, isAuthenticated, startDemo, navigate]);
 
   function back() {
     setFormError(null);
