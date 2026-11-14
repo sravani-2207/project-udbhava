@@ -1,0 +1,48 @@
+# UDBHAVA
+### From Real-World Problems to Real Opportunities
+
+**Project Overview**
+
+Udbhava is an AI-powered industry–student collaboration platform that connects startups and companies with students through real-world problem-solving challenges. It provides students with opportunities to apply their knowledge to practical industry problems while helping companies discover fresh perspectives and emerging talent.
+
+### The Problem
+
+Students often learn technical concepts without getting enough opportunities to apply them to actual industry problems. At the same time, startups and small-scale companies may find it difficult to discover capable emerging talent and gather fresh approaches to their challenges.
+
+### Our Solution
+
+Udbhava creates a shared platform where companies can publish real-world challenges and students can discover, understand, and submit solutions. AI-powered evaluation provides structured feedback, helping students identify strengths, understand gaps, and improve their submissions through multiple versions.
+
+### How Udbhava Works
+
+1. **Challenge Creation:** Companies publish problems with descriptions, requirements, evaluation criteria, and deadlines.
+2. **Challenge Discovery:** Students explore challenges based on their interests and skills.
+3. **Solution Submission:** Students submit solutions through text or voice.
+4. **AI Evaluation:** Grok evaluates submissions against challenge-specific criteria and generates structured feedback.
+5. **Voice Interaction:** Gnani Prisma V3.0 converts spoken student responses into text, while Gnani Timbre converts evaluation feedback into speech.
+6. **Continuous Improvement:** Students review feedback, improve their solutions, and submit updated versions.
+
+### Gnani AI Integration
+
+- **Gnani Prisma V3.0:** Enables voice-based solution submission through speech-to-text, making interaction more accessible and natural.
+- **Gnani Timbre:** Converts AI-generated evaluation feedback into speech, allowing students to listen to suggestions instead of relying only on written feedback.
+
+Together, these integrations create a voice-enabled experience: **Speak → Evaluate → Listen → Improve.**
+
+### Innovation and Impact
+
+Udbhava's innovation lies in the application and orchestration of existing AI capabilities within a connected industry–student problem-solving workflow. Rather than treating speech recognition, AI evaluation, and speech generation as isolated features, Udbhava brings them together to support an end-to-end learning and collaboration experience.
+
+**For Students:** Practical industry exposure, structured feedback, continuous improvement, and opportunities to demonstrate their skills.
+
+**For Companies:** Access to student perspectives, solution proposals, and opportunities to identify potential interns and emerging talent.
+
+### Technology Stack
+
+React, TypeScript, Vite, Convex, Grok API, Gnani Prisma V3.0, and Gnani Timbre.
+
+### Vision
+
+To make real-world problem-solving more accessible to students and create meaningful connections between emerging talent and industry.
+
+**GitHub:** https://github.com/sravani-2207/project-udbhava
