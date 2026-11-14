@@ -1,229 +1,284 @@
-# Udbhava
+# 🚀 Udbhava
+### Connecting Businesses, Students & AI Through Real-World Problem Solving
 
-A calm, premium exchange between students and small teams.
+**Udbhava** is an AI-powered industry–student collaboration platform that connects startups and small-scale companies with students through real-world challenges.
 
-Startups post the real problems they're stuck on. Students take a brief up solo or
-with a team, submit phase by phase, and receive structured first-pass feedback.
-Startups shortlist, comment, compare side by side, and send real opportunities.
+The platform enables companies to publish practical business and technical problems, while students can discover challenges, submit solutions, receive AI-powered evaluations, and continuously improve their approaches.
+
+By integrating **Gnani AI voice technologies and Grok-powered evaluation**, Udbhava creates an interactive problem-solving ecosystem that goes beyond traditional project submissions.
 
 ---
 
-## Version 1 scope
+## 💡 The Problem
 
-This build deliberately stops at the scoped v1:
+Students often acquire technical knowledge through academics but lack opportunities to apply it to real industry challenges.
 
-- **The flow it nails first:** a student submits a solution — and can resubmit it
-  as a new version until the deadline.
-- **The student's first screen:** the open problems board, ranked against their
-  profile.
-- **Who it is for:** students and organizations. **No admin dashboard** in v1.
-  Admin-only features (verification queues, suspensions, taxonomy, audit logs) are
-  intentionally not built.
-- A complete organization side exists so submissions have a real reviewer:
-  posting briefs, drafts, publishing, closing, phase-level review, shortlisting,
-  comments, side-by-side comparison, offers, and basic analytics.
+Meanwhile, startups and small-scale companies face business and technical problems but may have limited resources to explore different solution approaches or identify emerging talent.
 
-## Stack
+Udbhava aims to bridge this gap by creating a common platform where businesses present challenges and students contribute practical solutions.
 
-- React 19, Vite, TypeScript (strict), Tailwind CSS v4, shadcn/ui (Radix),
-  React Router, Framer Motion, Recharts, Lucide.
-- React Hook Form + Zod for the submission, profile, and problem forms; Zod also
-  validates onboarding and opportunity messages.
-- **Convex** for the backend, database, auth, and file storage.
+---
 
-### Note on the requested Express/Postgres stack
+## 🎯 Our Solution
 
-This project runs on the Freebuff browser runtime, whose managed backend is
-Convex. The server layer therefore lives in `src/convex` instead of a separate
-Express process. The requested guarantees are preserved in that layer:
+Udbhava provides a structured environment for collaboration between businesses and students.
 
-- every function validates its inputs and re-checks the caller's role server-side
-  (`src/convex/lib/authz.ts`);
-- auth sessions are issued by Convex Auth (email OTP, no passwords, secure
-  httpOnly session handling) rather than a hand-rolled JWT + bcrypt pair;
-- uploads use Convex file storage instead of Multer;
-- the 50-solution cap is enforced inside one serializable Convex mutation, which
-  gives the same atomic check-and-increment guarantee as a Postgres transaction
-  with `SELECT … FOR UPDATE`;
-- no secrets are committed. Configuration lives in `.env.example` and the Convex
-  deployment environment.
+### 🏢 For Companies
+- Publish real-world business and technical challenges.
+- Receive fresh perspectives and innovative solution proposals.
+- Explore different approaches to existing problems.
+- Discover emerging talent through practical submissions.
+- Identify potential internship and recruitment opportunities.
 
-There is **no external AI API or model anywhere in this project**. See
-[AI feedback](#ai-feedback).
+### 🎓 For Students
+- Explore challenges based on skills and interests.
+- Gain exposure to practical industry problems.
+- Submit solutions through text or voice.
+- Receive structured AI-powered feedback.
+- Track submission versions and improvements.
+- Showcase problem-solving abilities to potential employers.
 
-## Run it locally
+---
 
-Prerequisites: Bun and a Convex project.
+## ⚙️ How Udbhava Works
+
+The platform follows a simple workflow:
+
+1. **Challenge Publishing:** Companies publish challenges with descriptions, requirements, evaluation criteria, and deadlines.
+2. **Challenge Discovery:** Students explore available challenges based on their interests and technical skills.
+3. **Solution Submission:** Students submit their approaches, supporting links, and files.
+4. **AI Evaluation:** Submitted solutions are evaluated against predefined criteria.
+5. **Intelligent Feedback:** Students receive scores, strengths, weaknesses, and improvement suggestions.
+6. **Continuous Improvement:** Students can submit multiple versions and track their progress.
+
+---
+
+## 🤖 AI Integrations
+
+A major highlight of Udbhava is the integration of multiple AI capabilities into one connected workflow.
+
+### 🎙️ 1. Gnani Prisma V3.0 – Speech-to-Text
+
+Integrated for voice-based solution input.
+
+- Allows students to explain their ideas through speech.
+- Converts spoken input into editable text.
+- Supports English and Telugu language selection.
+- Makes the submission experience more natural and accessible.
+
+### 🔊 2. Gnani Timbre – Text-to-Speech
+
+Integrated to make AI-generated feedback available through voice.
+
+- Converts written evaluation feedback into speech.
+- Allows students to listen to their feedback.
+- Enhances accessibility and interaction.
+
+### 🧠 3. Grok – AI-Powered Solution Evaluation
+
+Grok is integrated to analyze student submissions against the evaluation criteria defined for each challenge.
+
+It generates:
+- Solution alignment scores.
+- Identified strengths.
+- Areas requiring improvement.
+- Actionable recommendations.
+
+This helps students understand how effectively their solutions address the given problem.
+
+---
+
+## ✨ Innovation & Novelty
+
+Existing platforms already provide challenge-based collaboration, while existing AI models offer speech recognition, language understanding, and speech generation.
+
+**Udbhava's innovation lies in combining these capabilities into a unified industry–student problem-solving workflow.**
+
+Our approach brings together:
+
+| Technology | Role in Udbhava |
+|---|---|
+| Gnani Prisma V3.0 | Converts students' spoken ideas into text |
+| Grok | Evaluates proposed solutions against defined criteria |
+| Gnani Timbre | Converts AI-generated feedback into speech |
+
+### Our Integrated Workflow
+
+**Voice Input → AI Evaluation → Voice Feedback → Continuous Improvement**
+
+Rather than developing another standalone AI model, we focus on integrating existing AI technologies into a practical application that addresses the gap between businesses seeking solutions and students seeking real-world experience.
+
+The novelty is in the application, orchestration, and combination of these technologies with challenge management, structured evaluation, and version-based progress tracking.
+
+---
+
+## ⭐ Key Features
+
+- **Challenge Discovery:** Explore real-world company challenges.
+- **Skill-Based Exploration:** Find opportunities aligned with student interests and skills.
+- **Voice-Based Input:** Explain solutions using Gnani Prisma.
+- **AI-Powered Evaluation:** Receive structured feedback through Grok.
+- **Voice Feedback:** Listen to evaluations using Gnani Timbre.
+- **Version Management:** Maintain multiple submissions and track improvements.
+- **Evaluation Criteria:** Assess solutions against predefined challenge requirements.
+- **Student Dashboard:** Monitor ongoing challenges and submission progress.
+
+---
+
+## 🛠️ Technology Stack
+
+| Category | Technologies |
+|---|---|
+| Frontend | React, TypeScript |
+| Build Tool | Vite |
+| UI | Tailwind CSS, shadcn/ui |
+| Backend | Convex |
+| Database | Convex Database |
+| Authentication | Convex Auth |
+| AI Evaluation | Grok API (xAI) |
+| Speech-to-Text | Gnani Prisma V3.0 |
+| Text-to-Speech | Gnani Timbre |
+| Version Control | Git, GitHub |
+
+---
+
+## 🏗️ System Workflow
+
+```text
+       COMPANIES
+           |
+           v
+    Publish Challenges
+           |
+           v
+     UDBHAVA PLATFORM
+           |
+           v
+     STUDENT DISCOVERY
+           |
+           v
+    SOLUTION SUBMISSION
+           |
+      +----+----+
+      |         |
+      v         v
+   TEXT      VOICE INPUT
+                 |
+                 v
+          GNANI PRISMA
+                 |
+                 v
+          CONVERT TO TEXT
+      |         |
+      +----+----+
+           |
+           v
+      GROK EVALUATION
+           |
+           v
+     STRUCTURED FEEDBACK
+           |
+           v
+       GNANI TIMBRE
+           |
+           v
+      VOICE FEEDBACK
+           |
+           v
+    STUDENT IMPROVEMENT
+           |
+           v
+     VERSION TRACKING
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js
+- npm
+- Git
+- Convex account
+- xAI API key
+- Gnani API credentials
+
+### 1. Clone the Repository
 
 ```bash
-bun install
+git clone <YOUR_GITHUB_REPOSITORY_URL>
 ```
 
-Set up `.env.example` values in `.env.local` (or use the values already injected
-by the runtime):
-
-```env
-VITE_CONVEX_URL=https://<your-deployment>.convex.cloud
-CONVEX_DEPLOYMENT=<your-deployment-name>
-CONVEX_SITE_URL=http://localhost:5173
-```
-
-Start the backend and generate types:
+### 2. Navigate to the Project
 
 ```bash
-bunx convex dev
+cd project-udbhava
 ```
 
-In a second terminal, seed the demo data and start the app:
+### 3. Install Dependencies
 
 ```bash
-bunx convex run seed:run
-bun run dev
+npm install
 ```
 
-The seed is idempotent, so `bun run seed` (alias) is safe to run repeatedly.
-
-### Demo access (no email required)
-
-On `/auth`, use **Student demo** or **Startup demo**. Each creates an isolated
-demo workspace on an anonymous session:
-
-- **Student demo** — a filled profile, one live assignment on a multi-phase brief,
-  a submitted version with feedback, an offer, and notifications.
-- **Startup demo** — a company profile, two owned briefs, five student
-  submissions with analyses, a shortlist, a reviewer note, and a sent offer.
-
-Email sign-up/sign-in uses a six-digit code, asks for the **role first**, then
-collects role-specific onboarding details. The role is fixed at onboarding.
-
-## Seeded data
-
-`bunx convex run seed:run` creates, idempotently:
-
-- 4 startups: Kettle & Co., Neelam Health, Tenfold Studio, Loopwise.
-- 4 student profiles with different skills and domains.
-- 6 problems, including multi-phase briefs, a single-phase brief, and one
-  closed-at-cap example that displays **Submissions full**.
-- Versioned sample submissions with AI analyses, shortlists, a reviewer comment,
-  and opportunities.
-- Notifications for feedback, shortlists, and offers.
-
-Admin accounts are excluded because admin is out of v1 scope.
-
-## Routes
-
-| Route | Access | Purpose |
-| --- | --- | --- |
-| `/` | public | Landing page |
-| `/auth` | public | Role-first sign-up, sign-in, demo access |
-| `/dashboard` | signed in | Redirects to the account's own workspace |
-| `/student` | student | Open problems board |
-| `/student/problems/:id` | student | Brief, phases, criteria, take-up flow |
-| `/student/work` | student | Active briefs, version progress, offers |
-| `/student/work/:assignmentId` | assigned student / team | Submission workspace and feedback |
-| `/student/profile` | student | Editable profile and showcase |
-| `/org` | organization | Overview, analytics, review queue |
-| `/org/problems` | organization | Draft / live / closed briefs |
-| `/org/problems/new` | organization | Create a brief with phases |
-| `/org/problems/:id` | owning organization | Review, shortlist, comment, compare, offer |
-| `/org/opportunities` | organization | Sent offers and their statuses |
-| `/org/profile` | organization | Company profile |
-
-Both app sections are protected by `RequireAuth` + `RequireRole` on the client,
-and every Convex query/mutation re-checks the signed-in user and ownership on the
-server. Signed-out visitors are sent to `/auth?returnTo=…` and returned to the page
-they asked for.
-
-## Business rules
-
-- **50-solution cap.** `assignments.takeUp` reads the problem, rejects a full or
-  closed problem, increments `solutionCount`, and auto-closes at the cap in one
-  serializable mutation. The board and detail page show a live
-  `taken / 50` meter and the full state reads **Submissions full**. Concurrent
-  take-ups cannot overfill the cap.
-- **Phases.** Every problem has at least one phase. With multiple phases, a student
-  must choose one at take-up; the choice is stored on the assignment and the
-  backend refuses submissions for any other phase.
-- **Solo/team is captured once.** `assignment.mode` is recorded at take-up. There
-  is no mutation to change it. Teams have up to five members, one lead, and only
-  the lead submits; the lead can be reassigned explicitly.
-- **Versioned submissions.** A new submission becomes `vN+1` for that
-  assignment/phase. Nothing is overwritten. Earlier versions and their feedback stay
-  readable, and resubmission works until the deadline.
-- **Deadline & closure.** Submissions stop when the org closes the brief, the
-  deadline passes, or the cap is reached. The workspace turns read-only and says
-  why.
-- **Notifications** are created for team invites, new submissions, feedback ready,
-  reviewer comments, shortlists, and offers.
-
-## AI feedback
-
-The feedback is generated by one isolated, deterministic stub:
-
-**`src/convex/services/aiAnalysis.ts`**
-
-It returns the final structured shape already used by the UI:
-
-```ts
-{
-  alignmentScore: number;          // 0–100
-  summary: string;
-  strengths: string[];
-  weaknesses: string[];
-  recommendations: string[];       // actionable upgrades
-  criteriaCoverage: { criterion: string; covered: boolean }[];
-  model: string;
-}
-```
-
-The module is clearly commented with the migration path: turn it into a Convex
-`"use node"` action, keep the result shape, persist it to `aiAnalyses`, and no UI
-change is required. The UI labels this as a structured first pass, not a verdict.
-
-## Data model
-
-Defined and indexed in `src/convex/schema.ts`:
-
-`users` (roles: student, organization, admin) · `studentProfiles` ·
-`organizationProfiles` · `problems` · `phases` · `teams` · `teamMembers` ·
-`assignments` · `submissions` · `aiAnalyses` · `shortlists` · `reviews` ·
-`opportunities` · `notifications`.
-
-Indexes cover every access path used by the queries: problems by owner/state/
-deadline, phases and submissions by problem, assignments by student and problem,
-team membership by problem and user, analyses and reviews by submission,
-notifications by user and read state.
-
-## Design
-
-- Palette applied only through theme tokens in `src/index.css`:
-  Muted Sage Grey `#A5A79B` in surfaces and hairlines, Warm Cream Beige
-  `#E8D2B5` in backgrounds and soft panels, Deep Burgundy `#590907` in primary
-  actions, headings, and active states.
-- Cormorant Garamond for display serif and a widely tracked `UDBHAVA` wordmark;
-  Instrument Sans for UI. The lotus mark is a clean inline SVG in
-  `src/components/brand.tsx`.
-- Loading skeletons (`src/components/shared/state-views.tsx`), explicit empty
-  states, and a page-level error boundary are used across the app.
-- Responsive from mobile upward; the dashboard uses a real sidebar with a mobile
-  sheet, and all dialogs constrain their height and scroll internally.
-
-## Scripts
+### 4. Configure Convex
 
 ```bash
-bun run dev          # Vite frontend
-bun run seed         # bunx convex run seed:run
-bun run lint         # ESLint
-bun tsc -b --noEmit  # Typecheck
-bunx convex dev --once   # Deploy functions + refresh generated types
+npx convex dev
 ```
 
-## Verification
+Follow the Convex setup instructions to connect your development deployment.
+
+### 5. Configure API Keys
+
+Set the required environment variables in your Convex development deployment:
 
 ```bash
-bunx convex dev --once && bun tsc -b --noEmit
+npx convex env set XAI_API_KEY "YOUR_XAI_API_KEY"
 ```
 
-Both commands must exit 0. The project currently has no dedicated automated test
-suite; v1 was verified through the typecheck, Convex function deploy, and the
-seeded end-to-end paths described above.
+```bash
+npx convex env set GNANI_API_KEY "YOUR_GNANI_API_KEY"
+```
+
+Keep API credentials private. Never commit API keys to GitHub.
+
+### 6. Start the Frontend
+
+Open another terminal:
+
+```bash
+npm run dev
+```
+
+Open the local development URL displayed by Vite.
+
+---
+
+## 🔮 Future Scope
+
+- Advanced company-side challenge management.
+- Improved student-to-challenge matching.
+- Multilingual voice interactions.
+- Enhanced evaluation and progress analytics.
+- More detailed company–student collaboration workflows.
+- Expanded internship and recruitment opportunities.
+
+---
+
+## 🌍 Our Vision
+
+We envision a platform where smaller businesses can explore innovative solutions without barriers, students can gain meaningful practical exposure, and AI can make collaboration more accessible and interactive.
+
+**Udbhava – From Real-World Problems to Real Opportunities.**
+
+---
+
+## 👥 Project
+
+Built with the vision of connecting emerging talent with real-world industry challenges through AI-powered collaboration.
+
+**Technologies:** React | TypeScript | Convex | Grok | Gnani AI
+
+---
